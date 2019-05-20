@@ -122,8 +122,10 @@ int main(void)
 			if(rec == 'B'){
 				unsigned int value = getADCdata(1);
 				sprintf(cdcRecByte, "%05u", value);
-				cdcRecByte[5] = 0x04;
-				cdcRecByte[6] = 0;
+
+				cdcRecByte[5] = 0x0A;
+				cdcRecByte[6] = 0x0D;
+				cdcRecByte[7] = 0;
 				fputs(cdcRecByte, &USBSerialStream);
 				cdcRecPointer =& cdcRecByte[0];
 				//blink();
@@ -162,6 +164,7 @@ unsigned int getADCdata(unsigned int hanel){ // TODO: ustawic czanel
 	    while(!(SPSR & (1<<SPIF)));
 	    data[1] = SPDR; // LSB L data
 		SS_ADC_high();
+		data[0] = data[0] & 0b00001111;
 		return data[0] * 256 + data[1];
 }
 

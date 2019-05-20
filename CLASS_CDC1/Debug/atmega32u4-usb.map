@@ -3825,7 +3825,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x1702
+.text           0x00000000     0x1710
  *(.vectors)
  .vectors       0x00000000       0xac C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega32u4/avr5/crtatmega32u4.o
                 0x00000000                __vector_default
@@ -4032,59 +4032,59 @@ END GROUP
                 0x00000f80        0x4 VirtualSerial.o
                 0x00000f80                SS_ADC_low
  .text.getADCdata
-                0x00000f84       0x3a VirtualSerial.o
+                0x00000f84       0x3c VirtualSerial.o
                 0x00000f84                getADCdata
- .text.blink    0x00000fbe       0x22 VirtualSerial.o
-                0x00000fbe                blink
+ .text.blink    0x00000fc0       0x22 VirtualSerial.o
+                0x00000fc0                blink
  .text.SetupHardware
-                0x00000fe0       0x32 VirtualSerial.o
-                0x00000fe0                SetupHardware
- .text.main     0x00001012       0xd6 VirtualSerial.o
-                0x00001012                main
+                0x00000fe2       0x32 VirtualSerial.o
+                0x00000fe2                SetupHardware
+ .text.main     0x00001014       0xe2 VirtualSerial.o
+                0x00001014                main
  .text.EVENT_USB_Device_Connect
-                0x000010e8        0x2 VirtualSerial.o
-                0x000010e8                EVENT_USB_Device_Connect
+                0x000010f6        0x2 VirtualSerial.o
+                0x000010f6                EVENT_USB_Device_Connect
  .text.EVENT_USB_Device_Disconnect
-                0x000010ea        0x2 VirtualSerial.o
-                0x000010ea                EVENT_USB_Device_Disconnect
+                0x000010f8        0x2 VirtualSerial.o
+                0x000010f8                EVENT_USB_Device_Disconnect
  .text.EVENT_USB_Device_ConfigurationChanged
-                0x000010ec        0x8 VirtualSerial.o
-                0x000010ec                EVENT_USB_Device_ConfigurationChanged
+                0x000010fa        0x8 VirtualSerial.o
+                0x000010fa                EVENT_USB_Device_ConfigurationChanged
  .text.EVENT_USB_Device_ControlRequest
-                0x000010f4        0x8 VirtualSerial.o
-                0x000010f4                EVENT_USB_Device_ControlRequest
+                0x00001102        0x8 VirtualSerial.o
+                0x00001102                EVENT_USB_Device_ControlRequest
  .text.avr-libc
-                0x000010fc       0x52 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(fputs.o)
-                0x000010fc                fputs
+                0x0000110a       0x52 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(fputs.o)
+                0x0000110a                fputs
  .text.avr-libc
-                0x0000114e       0x3e c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(sprintf.o)
-                0x0000114e                sprintf
+                0x0000115c       0x3e c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(sprintf.o)
+                0x0000115c                sprintf
  .text.avr-libc
-                0x0000118c      0x3a4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
-                0x0000118c                vfprintf
+                0x0000119a      0x3a4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
+                0x0000119a                vfprintf
  .text.avr-libc
-                0x00001530       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strnlen_P.o)
-                0x00001530                strnlen_P
+                0x0000153e       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strnlen_P.o)
+                0x0000153e                strnlen_P
  .text.avr-libc
-                0x00001546       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strnlen.o)
-                0x00001546                strnlen
+                0x00001554       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strnlen.o)
+                0x00001554                strnlen
  .text.avr-libc
-                0x0000155c       0x78 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(fputc.o)
-                0x0000155c                fputc
+                0x0000156a       0x78 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(fputc.o)
+                0x0000156a                fputc
  .text.avr-libc
-                0x000015d4       0xbc c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(ultoa_invert.o)
-                0x000015d4                __ultoa_invert
+                0x000015e2       0xbc c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(ultoa_invert.o)
+                0x000015e2                __ultoa_invert
  .text.libgcc.prologue
-                0x00001690       0x38 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_prologue.o)
-                0x00001690                __prologue_saves__
+                0x0000169e       0x38 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_prologue.o)
+                0x0000169e                __prologue_saves__
  .text.libgcc.prologue
-                0x000016c8       0x36 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_epilogue.o)
-                0x000016c8                __epilogue_restores__
-                0x000016fe                . = ALIGN (0x2)
+                0x000016d6       0x36 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_epilogue.o)
+                0x000016d6                __epilogue_restores__
+                0x0000170c                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000016fe        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x000016fe                _exit
-                0x000016fe                exit
+ .fini9         0x0000170c        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x0000170c                _exit
+                0x0000170c                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -4103,11 +4103,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000016fe        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x0000170c        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00001702                _etext = .
+                0x00001710                _etext = .
 
-.data           0x00800100       0x20 load address 0x00001702
+.data           0x00800100       0x20 load address 0x00001710
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -4140,8 +4140,8 @@ END GROUP
                 0x00800132                USB_DeviceState
                 0x00800133                USB_ControlRequest
                 0x0080013b                PROVIDE (__bss_end, .)
-                0x00001702                __data_load_start = LOADADDR (.data)
-                0x00001722                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00001710                __data_load_start = LOADADDR (.data)
+                0x00001730                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0080013b        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
@@ -4280,7 +4280,7 @@ END GROUP
  .debug_abbrev  0x0000197b      0x16e src/LUFA/LUFA/Drivers/USB/Core/USBTask.o
  .debug_abbrev  0x00001ae9      0x36b VirtualSerial.o
 
-.debug_line     0x00000000     0x87f2
+.debug_line     0x00000000     0x87fe
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x199 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega32u4/avr5/crtatmega32u4.o
  .debug_line    0x00000199      0xcc6 Descriptors.o
@@ -4292,7 +4292,7 @@ END GROUP
  .debug_line    0x00006135      0xaa1 src/LUFA/LUFA/Drivers/USB/Core/DeviceStandardReq.o
  .debug_line    0x00006bd6      0x47a src/LUFA/LUFA/Drivers/USB/Core/Events.o
  .debug_line    0x00007050      0x7fa src/LUFA/LUFA/Drivers/USB/Core/USBTask.o
- .debug_line    0x0000784a      0xfa8 VirtualSerial.o
+ .debug_line    0x0000784a      0xfb4 VirtualSerial.o
 
 .debug_frame    0x00000000      0xb7c
  *(.debug_frame)
@@ -4331,7 +4331,7 @@ END GROUP
  .debug_str     0x000171f1      0xa70 VirtualSerial.o
                               0x15837 (size before relaxing)
 
-.debug_loc      0x00000000     0x466e
+.debug_loc      0x00000000     0x4692
  *(.debug_loc)
  .debug_loc     0x00000000      0x226 Descriptors.o
  .debug_loc     0x00000226      0xa23 src/LUFA/LUFA/Drivers/USB/Class/Device/CDCClassDevice.o
@@ -4341,7 +4341,7 @@ END GROUP
  .debug_loc     0x00003c5e      0x428 src/LUFA/LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
  .debug_loc     0x00004086      0x356 src/LUFA/LUFA/Drivers/USB/Core/DeviceStandardReq.o
  .debug_loc     0x000043dc       0x49 src/LUFA/LUFA/Drivers/USB/Core/USBTask.o
- .debug_loc     0x00004425      0x249 VirtualSerial.o
+ .debug_loc     0x00004425      0x26d VirtualSerial.o
 
 .debug_macinfo
  *(.debug_macinfo)
