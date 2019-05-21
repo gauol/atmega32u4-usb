@@ -100,38 +100,47 @@ int main(void)
 	
 	char cdcRecByte[255];
 	char * cdcRecPointer = cdcRecByte;
+	
+	char cdcTxByte[255];
+	//char * cdcTxPointer = cdcTxByte;
+	
+	char * substr = malloc(5);
+	
+	unsigned int deadTime;
+	unsigned int accumulate;
+	unsigned int resolution;
+	
 	for (;;)
 	{
-		//CheckJoystickMovement();
-
-		/* Must throw away unused bytes from the host, or it will lock up while waiting for the device */
 		int16_t rec = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
 		if(rec > 0){
 			* cdcRecPointer = (char)rec;
 			cdcRecPointer++;
 			* cdcRecPointer = 0; // zapis konca transmisji
-			if(rec == 4){ //end of transmision
-				fputs(cdcRecByte, &USBSerialStream);
-				blink();
-				cdcRecPointer =& cdcRecByte[0];
-			}
+
 			if(rec == 'A'){
-				PORTD ^= (1 << 1);
 				cdcRecPointer =& cdcRecByte[0];
 			}
 			if(rec == 'B'){
-				unsigned int value = getADCdata(1);
-				sprintf(cdcRecByte, "%05u", value);
-
-				cdcRecByte[5] = 0x0A;
-				cdcRecByte[6] = 0x0D;
-				cdcRecByte[7] = 0;
-				fputs(cdcRecByte, &USBSerialStream);
+				//fputs(cdcRecByte, &USBSerialStream);
+				strncpy(substr, cdcRecByte, 4);
+				deadTime = atoi(substr);
+				strncpy(substr, cdcRecByte+4, 4);
+				resolution = atoi(substr);
+				strncpy(substr, cdcRecByte+8, 4);
+				accumulate = atoi(substr);
+			
+				sprintf(cdcTxByte, "%04u-%04u-%04u", deadTime, resolution, accumulate);
+				
+				cdcTxByte[14] = 0x12;
+				cdcTxByte[15] = 0x15;
+				cdcTxByte[16] = 0;
+				fputs(cdcTxByte, &USBSerialStream);
 				cdcRecPointer =& cdcRecByte[0];
-				//blink();
 			}
 		}
-		
+			//unsigned int value = getADCdata(1);
+			
 		CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
 		USB_USBTask();
 	}
@@ -170,7 +179,7 @@ unsigned int getADCdata(unsigned int hanel){ // TODO: ustawic czanel
 
 void blink(void){
 	PORTD ^= (1 << 1);
-	_delay_ms(100);
+	_delay_ms(200);
 	PORTD ^= (1 << 1);
 }
 
@@ -190,38 +199,6 @@ void SetupHardware(void)
 	Joystick_Init();
 	LEDs_Init();
 	USB_Init();
-}
-
-/** Checks for changes in the position of the board joystick, sending strings to the host upon each change. */
-void CheckJoystickMovement(void)
-{
-	uint8_t     JoyStatus_LCL = Joystick_GetStatus();
-	char*       ReportString  = NULL;
-	static bool ActionSent    = false;
-
-	if (JoyStatus_LCL & JOY_UP)
-	  ReportString = "Joystick Up\r\n";
-	else if (JoyStatus_LCL & JOY_DOWN)
-	  ReportString = "Joystick Down\r\n";
-	else if (JoyStatus_LCL & JOY_LEFT)
-	  ReportString = "Joystick Left\r\n";
-	else if (JoyStatus_LCL & JOY_RIGHT)
-	  ReportString = "Joystick Right\r\n";
-	else if (JoyStatus_LCL & JOY_PRESS)
-	  ReportString = "Joystick Pressed\r\n";
-	else
-		ActionSent = false;
-	 
-	if ((ReportString != NULL) && (ActionSent == false))
-	{
-		ActionSent = true;
-		
-		/* Write the string to the virtual COM port via the created character stream */
-		fputs(ReportString, &USBSerialStream);
-
-		/* Alternatively, without the stream: */
-		// CDC_Device_SendString(&VirtualSerial_CDC_Interface, ReportString);
-	}
 }
 
 /** Event handler for the library USB Connection event. */
@@ -252,18 +229,3 @@ void EVENT_USB_Device_ControlRequest(void)
 	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
 
-/** CDC class driver callback function the processing of changes to the virtual
- *  control lines sent from the host..
- *
- *  \param[in] CDCInterfaceInfo  Pointer to the CDC class interface configuration structure being referenced
- */
-//void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t *const CDCInterfaceInfo)
-//{
-	///* You can get changes to the virtual CDC lines in this callback; a common
-	   //use-case is to use the Data Terminal Ready (DTR) flag to enable and
-	   //disable CDC communications in your application when set to avoid the
-	   //application blocking while waiting for a host to become ready and read
-	   //in the pending data from the USB endpoints.
-	//*/
-	//bool HostReady = (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR) != 0;
-//}
