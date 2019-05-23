@@ -76,6 +76,7 @@
 		uint8_t SPI_send_rec_byte(uint8_t byte);
 		void SS_ADC_low(void);
 		void SS_ADC_high(void);
-		unsigned int getADCdata(unsigned int hanel);
+		unsigned int getADCdata(unsigned int channel);
+		void doMeasurement(void);
 #endif
 

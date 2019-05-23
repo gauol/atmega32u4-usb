@@ -72,9 +72,13 @@ USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
 static FILE USBSerialStream;
 
 
-/** Main program entry point. This routine contains the overall program flow, including initial
- *  setup of all components and the main program loop.
- */
+unsigned int deadTime;
+unsigned int accumulate;
+unsigned int resolution;
+
+char cdcTxByte[255];
+//char * cdcTxPointer = cdcTxByte;
+	
 int main(void)
 {
 	SetupHardware();
@@ -101,14 +105,8 @@ int main(void)
 	char cdcRecByte[255];
 	char * cdcRecPointer = cdcRecByte;
 	
-	char cdcTxByte[255];
-	//char * cdcTxPointer = cdcTxByte;
-	
 	char * substr = malloc(5);
-	
-	unsigned int deadTime;
-	unsigned int accumulate;
-	unsigned int resolution;
+
 	
 	for (;;)
 	{
@@ -129,20 +127,48 @@ int main(void)
 				resolution = atoi(substr);
 				strncpy(substr, cdcRecByte+8, 4);
 				accumulate = atoi(substr);
-			
-				sprintf(cdcTxByte, "%04u-%04u-%04u", deadTime, resolution, accumulate);
 				
-				cdcTxByte[14] = 0x12;
-				cdcTxByte[15] = 0x15;
-				cdcTxByte[16] = 0;
-				fputs(cdcTxByte, &USBSerialStream);
+				doMeasurement();
+				
+				//sprintf(cdcTxByte, "%04u-%04u-%04u", deadTime, resolution, accumulate);
+
+				//fputs(cdcTxByte, &USBSerialStream);
 				cdcRecPointer =& cdcRecByte[0];
 			}
 		}
-			//unsigned int value = getADCdata(1);
+			//unsigned int value = getADCdata(0);
 			
 		CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
 		USB_USBTask();
+	}
+}
+
+void doMeasurement(void){
+	// ustaw napiecie na 0
+	for (int i = 0; i < (65536 / resolution) ; i++) // rozdzielczosc nie jest stopniem a iloscia krokow
+	{
+		// ustaw napiecie ++ w zaleznosci od resolution
+		// _delay(deadTime);
+		unsigned int ch0 = 0;
+		unsigned int ch1 = 0;
+		unsigned int ch2 = 0;
+		unsigned int ch3 = 0;
+		
+		for (int i = 0; i < accumulate ; i++)
+		{
+			ch0 += getADCdata(0); // dac tutaj jakies delay?
+			ch1 += getADCdata(1);
+			ch2 += getADCdata(2);
+			ch3 += getADCdata(3);
+		}
+		
+		ch0 /= accumulate;
+		ch1 /= accumulate;
+		ch2 /= accumulate;
+		ch3 /= accumulate;
+		
+		sprintf(cdcTxByte, "Y%05u-%05u-%05u-%05uX", ch0, ch1, ch2, ch3);
+		fputs(cdcTxByte, &USBSerialStream);
 	}
 }
 
@@ -160,13 +186,13 @@ uint8_t SPI_send_rec_byte(uint8_t byte){
 	return SPDR;
 }
 
-unsigned int getADCdata(unsigned int hanel){ // TODO: ustawic czanel
+unsigned int getADCdata(unsigned int channel){ // TODO: ustawic czanel
 		char data[2];
 		SS_ADC_low();
 	    SPDR = 0x06;
 	    while(!(SPSR & (1<<SPIF)));
 	    data[0] = SPDR; // data H
-	    SPDR = 0x00;
+	    SPDR = channel<<6;
 	    while(!(SPSR & (1<<SPIF)));
 	    data[0] = SPDR; // MSB H data
 	    SPDR = 0x00;
