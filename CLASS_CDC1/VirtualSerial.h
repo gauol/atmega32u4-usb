@@ -76,7 +76,10 @@
 		uint8_t SPI_send_rec_byte(uint8_t byte);
 		void SS_ADC_low(void);
 		void SS_ADC_high(void);
-		unsigned int getADCdata(unsigned int channel);
+		void SS_DAC_low(void);
+		void SS_DAC_high(void);
+		unsigned int getADCdata(unsigned char channel);
+		void setDACdata(unsigned int voltage);
 		void doMeasurement(void);
 #endif
 

@@ -36,6 +36,9 @@
 
 #include "VirtualSerial.h"
 
+#define sbi(a, b) (a) |= (1 << (b))
+#define cbi(a, b) (a) &= ~(1 << (b))
+
 /** LUFA CDC Class driver interface configuration and state information. This structure is
  *  passed to all CDC Class driver functions, so that multiple instances of the same class
  *  within a device can be differentiated from one another.
@@ -82,19 +85,22 @@ char cdcTxByte[255];
 int main(void)
 {
 	SetupHardware();
-	DDRD |= (1 << 1); // led
-	DDRD |= (1 << 0); // CS - ADC
+	DDRB |= (1 << 6); // led
+	DDRB |= (1 << 0); // CS - ADC
+	DDRF |= (1 << 0); // CS - DAC
 	
 	//SPI
-	DDRD |= (0 << 1); // SS
+	DDRB |= (0 << 1); // SS
 	DDRB |= (2 << 1); // MOSI
 	DDRB |= (1 << 1); // SCK
 	
-	SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1); // master, CLK/64
+	SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1) ;//| (1 << CPOL); // master, CLK/64
 	SPSR; 
 	SPDR;
 	
 	SS_ADC_high();
+	SS_DAC_high();
+	// SPI
 	
 	/* Create a regular character stream for the interface so that it can be used with the stdio.h functions */
 	CDC_Device_CreateStream(&VirtualSerial_CDC_Interface, &USBSerialStream);
@@ -106,7 +112,17 @@ int main(void)
 	char * cdcRecPointer = cdcRecByte;
 	
 	char * substr = malloc(5);
-
+	
+	
+	// DAC test loop
+	//int var = 0;
+	//for (;;)
+	//{
+		//setDACdata(var);
+		//var++;
+		//if(var >= 65534)
+			//var = 0;
+	//}
 	
 	for (;;)
 	{
@@ -118,6 +134,16 @@ int main(void)
 
 			if(rec == 'A'){
 				cdcRecPointer =& cdcRecByte[0];
+			}
+			if(rec == 'C'){
+				strncpy(substr, cdcRecByte,5);
+				setDACdata(atoi(substr));
+			}
+			if(rec == 'D'){  //ADC terminal test - A0X - (0 to kana³ adc)
+				strncpy(substr, cdcRecByte, 4);
+				unsigned long int adcdata = getADCdata(atoi(substr));
+				sprintf(cdcTxByte, "Y%05luX", adcdata);
+				fputs(cdcTxByte, &USBSerialStream);
 			}
 			if(rec == 'B'){
 				//fputs(cdcRecByte, &USBSerialStream);
@@ -144,15 +170,25 @@ int main(void)
 }
 
 void doMeasurement(void){
+	unsigned long int res = 65536 / resolution;
 	// ustaw napiecie na 0
-	for (int i = 0; i < (65536 / resolution) ; i++) // rozdzielczosc nie jest stopniem a iloscia krokow
+	setDACdata(0);
+	for (unsigned long int i = 0; i < (res) ; i++) // rozdzielczosc nie jest iloscia krokow
 	{
 		// ustaw napiecie ++ w zaleznosci od resolution
-		// _delay(deadTime);
-		unsigned int ch0 = 0;
-		unsigned int ch1 = 0;
-		unsigned int ch2 = 0;
-		unsigned int ch3 = 0;
+		
+		setDACdata(resolution*i);
+		
+		for (int i = 0; i < deadTime ; i++){
+			_delay_ms(1);
+		}
+		
+		unsigned long int ch0 = 0;
+		unsigned long int ch1 = 0;
+		unsigned long int ch2 = 0;
+		unsigned long int ch3 = 0;
+		
+		cbi(SPCR, CPOL); // ustaw SPI na zbocze wzrastaj¹ce
 		
 		for (int i = 0; i < accumulate ; i++)
 		{
@@ -167,17 +203,25 @@ void doMeasurement(void){
 		ch2 /= accumulate;
 		ch3 /= accumulate;
 		
-		sprintf(cdcTxByte, "Y%05u-%05u-%05u-%05uX", ch0, ch1, ch2, ch3);
+		sprintf(cdcTxByte, "Y%05lu-%05lu-%05lu-%05luX", ch0, ch1, ch2, ch3);
 		fputs(cdcTxByte, &USBSerialStream);
 	}
 }
 
-void SS_ADC_high(void){ //PD0
-	PORTD |= (1 << 0); // PD0 goes high
+void SS_ADC_high(void){ //PB0
+	PORTB |= (1 << 0); // PB0 goes high
 }
 
-void SS_ADC_low(void){ //PD0
-	PORTD &= ~(1 << 0); // PD0 goes low
+void SS_ADC_low(void){ //PB0
+	PORTB &= ~(1 << 0); // PB0 goes low
+}
+
+void SS_DAC_high(void){ //PF0
+	PORTF |= (1 << 0); // PF0 goes high
+}
+
+void SS_DAC_low(void){ //PF0
+	PORTF &= ~(1 << 0); // PF0 goes low
 }
 
 uint8_t SPI_send_rec_byte(uint8_t byte){ 
@@ -186,13 +230,17 @@ uint8_t SPI_send_rec_byte(uint8_t byte){
 	return SPDR;
 }
 
-unsigned int getADCdata(unsigned int channel){ // TODO: ustawic czanel
+unsigned int getADCdata(unsigned char channel){\
+		//cbi(SPCR, CPOL);
 		char data[2];
 		SS_ADC_low();
 	    SPDR = 0x06;
 	    while(!(SPSR & (1<<SPIF)));
 	    data[0] = SPDR; // data H
-	    SPDR = channel<<6;
+
+		channel = channel<<6;
+	    SPDR = channel;
+
 	    while(!(SPSR & (1<<SPIF)));
 	    data[0] = SPDR; // MSB H data
 	    SPDR = 0x00;
@@ -203,10 +251,26 @@ unsigned int getADCdata(unsigned int channel){ // TODO: ustawic czanel
 		return data[0] * 256 + data[1];
 }
 
+void setDACdata(unsigned int voltage){
+	sbi(SPCR, CPOL);// SPCR set (1 << CPOL); // ustaw SPI na zbocze opadaj¹ce
+	char* tgt;
+	tgt = (char*)&voltage;
+	
+	SS_DAC_low();
+	
+	SPI_send_rec_byte(0);
+	tgt++;
+	SPI_send_rec_byte(*tgt);
+	tgt--;
+	SPI_send_rec_byte(*tgt);
+	
+	SS_DAC_high();
+}
+
 void blink(void){
-	PORTD ^= (1 << 1);
+	PORTB ^= (1 << PORTB6);
 	_delay_ms(200);
-	PORTD ^= (1 << 1);
+	PORTB ^= (1 << PORTB6);
 }
 
 /** Configures the board hardware and chip peripherals for the demo's functionality. */
