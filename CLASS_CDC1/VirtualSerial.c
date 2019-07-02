@@ -205,6 +205,10 @@ void doMeasurement(void){
 		
 		sprintf(cdcTxByte, "Y%05lu-%05lu-%05lu-%05luX", ch0, ch1, ch2, ch3);
 		fputs(cdcTxByte, &USBSerialStream);
+		
+		// zczytaj ramke USB o przerwaniu pomiaru
+		if(CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface) == 'S')
+			break;
 	}
 }
 
