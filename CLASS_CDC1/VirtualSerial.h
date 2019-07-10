@@ -80,6 +80,7 @@
 		void SS_DAC_high(void);
 		unsigned int getADCdata(unsigned char channel);
 		void setDACdata(unsigned int voltage);
+		void setADCzero(void);
 		void doMeasurement(void);
 #endif
 

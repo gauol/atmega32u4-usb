@@ -171,8 +171,7 @@ int main(void)
 
 void doMeasurement(void){
 	unsigned long int res = 65536 / resolution;
-	// ustaw napiecie na 0
-	setDACdata(0);
+
 	for (unsigned long int i = 0; i < (res) ; i++) // rozdzielczosc nie jest iloscia krokow
 	{
 		// ustaw napiecie ++ w zaleznosci od resolution
@@ -209,7 +208,11 @@ void doMeasurement(void){
 		// zczytaj ramke USB o przerwaniu pomiaru
 		if(CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface) == 'S')
 			break;
+		CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
+		USB_USBTask();
 	}
+	
+	setADCzero();
 }
 
 void SS_ADC_high(void){ //PB0
@@ -269,6 +272,16 @@ void setDACdata(unsigned int voltage){
 	SPI_send_rec_byte(*tgt);
 	
 	SS_DAC_high();
+}
+
+void setADCzero(void){
+	for (int i = 1; i < 256 ; i<<=1)
+	{
+		setDACdata(0XFFFF / i);
+		_delay_ms(1);
+	}
+	setDACdata(0);
+	
 }
 
 void blink(void){
