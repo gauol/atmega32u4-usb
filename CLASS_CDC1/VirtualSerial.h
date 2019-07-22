@@ -82,5 +82,7 @@
 		void setDACdata(unsigned int voltage);
 		void setADCzero(void);
 		void doMeasurement(void);
+		void getAndSendData(unsigned long int i);
+
 #endif
 

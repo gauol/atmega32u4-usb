@@ -174,45 +174,66 @@ void doMeasurement(void){
 
 	for (unsigned long int i = 0; i < (res) ; i++) // rozdzielczosc nie jest iloscia krokow
 	{
-		// ustaw napiecie ++ w zaleznosci od resolution
-		
-		setDACdata(resolution*i);
-		
-		for (int i = 0; i < deadTime ; i++){
-			_delay_ms(1);
-		}
-		
-		unsigned long int ch0 = 0;
-		unsigned long int ch1 = 0;
-		unsigned long int ch2 = 0;
-		unsigned long int ch3 = 0;
-		
-		cbi(SPCR, CPOL); // ustaw SPI na zbocze wzrastaj¹ce
-		
-		for (int i = 0; i < accumulate ; i++)
-		{
-			ch0 += getADCdata(0); // dac tutaj jakies delay?
-			ch1 += getADCdata(1);
-			ch2 += getADCdata(2);
-			ch3 += getADCdata(3);
-		}
-		
-		ch0 /= accumulate;
-		ch1 /= accumulate;
-		ch2 /= accumulate;
-		ch3 /= accumulate;
-		
-		sprintf(cdcTxByte, "Y%05lu-%05lu-%05lu-%05luX", ch0, ch1, ch2, ch3);
-		fputs(cdcTxByte, &USBSerialStream);
-		
+		getAndSendData(i);
+	
 		// zczytaj ramke USB o przerwaniu pomiaru
-		if(CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface) == 'S')
+		int16_t rec = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
+		
+		if(rec == 'S'){
+			rec = 0;
+			while (rec != 'S')
+			{
+				rec = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
+				if(rec == 'N'){
+					getAndSendData(i);
+					i++;
+				}
+				if(rec == 'C')
+					break;
+			}
+		}
+		if(rec == 'C')
 			break;
-		CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
-		USB_USBTask();
+		
 	}
 	
 	setADCzero();
+}
+
+void getAndSendData(unsigned long int i){
+	// ustaw napiecie ++ w zaleznosci od resolution
+	
+	setDACdata(resolution*i);
+	
+	for (int j = 0; j < deadTime ; j++){
+		_delay_ms(1);
+	}
+	
+	unsigned long int ch0 = 0;
+	unsigned long int ch1 = 0;
+	unsigned long int ch2 = 0;
+	unsigned long int ch3 = 0;
+	
+	cbi(SPCR, CPOL); // ustaw SPI na zbocze wzrastaj¹ce
+	
+	for (int j = 0; j < accumulate ; j++)
+	{
+		ch0 += getADCdata(0); // dac tutaj jakies delay?
+		ch1 += getADCdata(1);
+		ch2 += getADCdata(2);
+		ch3 += getADCdata(3);
+	}
+	
+	ch0 /= accumulate;
+	ch1 /= accumulate;
+	ch2 /= accumulate;
+	ch3 /= accumulate;
+
+	sprintf(cdcTxByte, "Y%05lu-%05lu-%05lu-%05luX", ch0, ch1, ch2, ch3);
+	fputs(cdcTxByte, &USBSerialStream);
+	
+	CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
+	USB_USBTask();
 }
 
 void SS_ADC_high(void){ //PB0
